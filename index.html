@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 — Petals for You 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(160deg,#1a0010,#2d0020,#0a001a);overflow:hidden;font-family:'Poppins',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center}
+canvas{position:fixed;inset:0;z-index:0}
+.ui{position:relative;z-index:1;text-align:center;padding:20px}
+h1{font-family:'Comic Sans MS',cursive;color:#ffb3d9;font-size:clamp(1.3rem,5vw,2.5rem);text-shadow:0 0 20px #f9c;margin-bottom:10px}
+.name-display{font-family:'Comic Sans MS',cursive;font-size:clamp(2.5rem,12vw,6rem);color:#fff;text-shadow:0 0 30px #f9c,0 0 60px #f06;font-weight:bold;letter-spacing:8px;animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 20px #f9c,0 0 40px #f06}50%{text-shadow:0 0 40px #f9c,0 0 80px #f06,0 0 100px #f06}}
+.sub{font-family:'Comic Sans MS',cursive;color:rgba(255,180,220,0.6);font-size:clamp(0.8rem,2.5vw,1rem);margin-top:16px}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="ui">
+  <h1>🌸 This name is my whole world</h1>
+  <div class="name-display" id="nameDisplay">Fiza</div>
+  <p class="sub">Every petal that falls — falls for you 💕</p>
+</div>
+<script>
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+let W=canvas.width=innerWidth,H=canvas.height=innerHeight;
+window.addEventListener('resize',()=>{W=canvas.width=innerWidth;H=canvas.height=innerHeight;init()});
+const petals=[];
+const colors=['#ff9dbb','#ffb3c6','#ffc8d5','#ff6b9d','#e91e8c','#ff4da6','#ffadd2'];
+function Petal(){
+  this.x=Math.random()*W;this.y=-30;
+  this.r=Math.random()*12+6;
+  this.vx=(Math.random()-0.5)*2;this.vy=Math.random()*2+1;
+  this.rot=Math.random()*360;this.rotV=(Math.random()-0.5)*4;
+  this.color=colors[Math.floor(Math.random()*colors.length)];
+  this.opacity=Math.random()*0.6+0.4;
+  this.swing=Math.random()*0.05;this.swingT=Math.random()*100;
+}
+Petal.prototype.draw=function(){
+  ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot*Math.PI/180);
+  ctx.globalAlpha=this.opacity;
+  ctx.beginPath();ctx.ellipse(0,0,this.r,this.r*0.5,0,0,Math.PI*2);
+  ctx.fillStyle=this.color;ctx.fill();
+  ctx.restore();
+};
+Petal.prototype.update=function(){
+  this.swingT+=this.swing;this.x+=Math.sin(this.swingT)*1.5+this.vx;
+  this.y+=this.vy;this.rot+=this.rotV;
+  return this.y>H+30;
+};
+function init(){petals.length=0;for(let i=0;i<80;i++){const p=new Petal();p.y=Math.random()*H;petals.push(p)}}
+init();
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  if(Math.random()<0.3)petals.push(new Petal());
+  for(let i=petals.length-1;i>=0;i--){if(petals[i].update())petals.splice(i,1);else petals[i].draw();}
+  requestAnimationFrame(loop);
+}loop();
+</script>
+</body>
+</html>
